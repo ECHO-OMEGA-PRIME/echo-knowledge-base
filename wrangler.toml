@@ -1,0 +1,19 @@
+name = "echo-knowledge-base"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+[triggers]
+crons = ["0 3 * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "echo-knowledge-base"
+database_id = "05d406e0-dd84-4dd3-88d6-81ce7250d647"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "a78101e5883645658553588fb9f49bef"
+
+[[services]]
+binding = "ENGINE_RUNTIME"
+service = "echo-engine-runtime"
