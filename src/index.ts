@@ -34,6 +34,13 @@ function sanitizeBody(b: Record<string, unknown>): Record<string, unknown> {
 }
 function tid(c: any): string { return sanitize(c.req.header('X-Tenant-ID') || c.req.query('tenant_id') || '', 100); }
 function json(c: any, d: unknown, s = 200) { return c.json(d, s); }
+
+function slog(level: 'info' | 'warn' | 'error', msg: string, data?: Record<string, unknown>) {
+  const entry = { ts: new Date().toISOString(), level, worker: 'echo-knowledge-base', version: '1.0.0', msg, ...data };
+  if (level === 'error') console.error(JSON.stringify(entry));
+  else console.log(JSON.stringify(entry));
+}
+
 function slugify(s: string): string { return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
 
 interface RLState { c: number; t: number }
@@ -284,7 +291,7 @@ app.onError((err, c) => {
   if (err.message?.includes('JSON')) {
     return c.json({ error: 'Invalid JSON body' }, 400);
   }
-  console.error(`[echo-knowledge-base] ${err.message}`);
+  slog('error', 'Unhandled request error', { error: err.message, stack: err.stack });
   return c.json({ error: 'Internal server error' }, 500);
 });
 
