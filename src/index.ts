@@ -6,6 +6,8 @@ type Env = {
   CACHE: KVNamespace;
   ENGINE_RUNTIME: Fetcher;
   ECHO_API_KEY: string;
+  STRIPE_SECRET_KEY?: string;
+  STRIPE_WEBHOOK_SECRET?: string;
 };
 
 const app = new Hono<{ Bindings: Env }>();
@@ -36,7 +38,7 @@ function tid(c: any): string { return sanitize(c.req.header('X-Tenant-ID') || c.
 function json(c: any, d: unknown, s = 200) { return c.json(d, s); }
 
 function slog(level: 'info' | 'warn' | 'error', msg: string, data?: Record<string, unknown>) {
-  const entry = { ts: new Date().toISOString(), level, worker: 'echo-knowledge-base', version: '1.0.0', msg, ...data };
+  const entry = { ts: new Date().toISOString(), level, worker: 'echo-knowledge-base', version: '2.0.0', msg, ...data };
   if (level === 'error') console.error(JSON.stringify(entry));
   else console.log(JSON.stringify(entry));
 }
@@ -81,9 +83,9 @@ app.use('*', async (c, next) => {
 });
 
 // Health
-app.get('/', (c) => json(c, { service: 'echo-knowledge-base', version: '1.0.0', status: 'operational' }));
-app.get('/health', (c) => json(c, { status: 'ok', service: 'echo-knowledge-base', version: '1.0.0', timestamp: new Date().toISOString() }));
-app.get('/status', (c) => json(c, { status: 'operational', service: 'echo-knowledge-base', version: '1.0.0' }));
+app.get('/', (c) => json(c, { service: 'echo-knowledge-base', version: '2.0.0', status: 'operational' }));
+app.get('/health', (c) => json(c, { status: 'ok', service: 'echo-knowledge-base', version: '2.0.0', timestamp: new Date().toISOString() }));
+app.get('/status', (c) => json(c, { status: 'operational', service: 'echo-knowledge-base', version: '2.0.0' }));
 
 // === TENANTS ===
 app.post('/tenants', async (c) => {
